@@ -1,19 +1,22 @@
 import regeneratorRuntime from "regenerator-runtime";
-
+import { useState } from "react";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 import useClipboard from "react-use-clipboard";
-import { useState } from "react";
 
 const App = () => {
   const [textToCopy, setTextToCopy] = useState("");
   const [isCopied, setCopied] = useClipboard(textToCopy, {
     successDuration: 1000,
   });
+  const [selectedLanguage, setSelectedLanguage] = useState("en-US"); // Default language
 
   const startListening = () =>
-    SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
+    SpeechRecognition.startListening({
+      continuous: true,
+      language: selectedLanguage,
+    });
   const { transcript, browserSupportsSpeechRecognition } =
     useSpeechRecognition();
 
@@ -21,6 +24,10 @@ const App = () => {
     navigator.clipboard.writeText(transcript);
     setCopied();
     setTextToCopy(""); // Reset transcript after copying
+  };
+
+  const handleLanguageChange = (e) => {
+    setSelectedLanguage(e.target.value);
   };
 
   if (!browserSupportsSpeechRecognition) {
@@ -63,6 +70,16 @@ const App = () => {
           >
             Stop Listening
           </button>
+          <select
+            value={selectedLanguage}
+            onChange={handleLanguageChange}
+            className="border border-gray-300 rounded-md px-3 py-2"
+          >
+            <option value="en-US">English (US)</option>
+            <option value="en-GB">English (UK)</option>
+            <option value="hi-IN">Hindi(IN)</option>
+            {/* Add more options for other languages */}
+          </select>
         </div>
       </div>
     </div>
